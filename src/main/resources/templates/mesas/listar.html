@@ -6,8 +6,23 @@
 <nav th:replace="~{layout :: navbar}"></nav>
 
 <div class="container mt-4">
-    <h2 class="mb-3">Gestión de Mesas</h2>
-    <a th:href="@{/mesas/nuevo}" class="btn btn-primary mb-3">Nueva Mesa</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>🪑 Gestión de Mesas</h2>
+        <div>
+            <a th:href="@{/mesas/disponibles}" class="btn btn-success">Ver Disponibles</a>
+            <a th:href="@{/mesas/nuevo}" class="btn btn-primary"> Nueva Mesa</a>
+        </div>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -31,6 +46,13 @@
                     <span th:if="${mesa.estado == 'mantenimiento'}" class="badge bg-secondary" th:text="${mesa.estado}"></span>
                 </td>
                 <td>
+                    <a th:if="${mesa.estado == 'disponible'}"
+                       th:href="@{'/mesas/asignar/' + ${mesa.idMesa}}"
+                       class="btn btn-sm btn-primary" title="Asignar cliente">Asignar</a>
+                    <a th:if="${mesa.estado == 'ocupada'}"
+                       th:href="@{'/mesas/liberar/' + ${mesa.idMesa}}"
+                       class="btn btn-sm btn-success" title="Liberar mesa"
+                       onclick="return confirm('¿Liberar esta mesa?')">Liberar</a>
                     <a th:href="@{'/mesas/editar/' + ${mesa.idMesa}}" class="btn btn-sm btn-warning">Editar</a>
                     <a th:href="@{'/mesas/eliminar/' + ${mesa.idMesa}}" class="btn btn-sm btn-danger"
                        onclick="return confirm('¿Eliminar esta mesa?')">Eliminar</a>

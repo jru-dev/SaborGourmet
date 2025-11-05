@@ -1,9 +1,10 @@
 package com.example.saborgourmet.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mesa")
@@ -25,4 +26,10 @@ public class Mesa {
 
     @Column(length = 20)
     private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente")
+    private Cliente clienteAsignado;
+
+    private LocalDateTime horaAsignacion;
 }
