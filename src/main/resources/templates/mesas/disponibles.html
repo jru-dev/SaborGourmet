@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Mesas Disponibles en Tiempo Real</h2>
+        <span class="badge bg-primary" id="ultimaActualizacion">Actualizando...</span>
+    </div>
+
+    <div class="alert alert-info">
+        <strong> Información:</strong> Esta página se actualiza automáticamente cada 5 segundos
+    </div>
+
+    <div id="mesasContainer" class="row">
+        <div th:each="mesa : ${mesas}" class="col-md-3 mb-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Mesa #<span th:text="${mesa.numero}"></span></h3>
+                    <p class="card-text">
+                        <span class="badge bg-success fs-6">DISPONIBLE</span>
+                    </p>
+                    <p><strong>Capacidad:</strong> <span th:text="${mesa.capacidad}"></span> personas</p>
+                    <a th:href="@{'/mesas/asignar/' + ${mesa.idMesa}}" class="btn btn-sm btn-primary">
+                        👥 Asignar Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(mesas)}" class="col-12">
+            <div class="alert alert-warning text-center">
+                <h5> No hay mesas disponibles en este momento</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<div th:replace="~{layout :: scripts}"></div>
+
+<script>
+    function actualizarMesas() {
+        fetch('/mesas/disponibles')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const nuevoContenido = doc.querySelector('#mesasContainer');
+                if (nuevoContenido) {
+                    document.querySelector('#mesasContainer').innerHTML = nuevoContenido.innerHTML;
+                }
+
+                const ahora = new Date();
+                document.getElementById('ultimaActualizacion').textContent =
+                    'Actualizado: ' + ahora.toLocaleTimeString();
+            })
+            .catch(error => console.error('Error al actualizar:', error));
+    }
+
+    // Actualizar cada 5 segundos
+    setInterval(actualizarMesas, 5000);
+
+    // Actualización inicial
+    document.addEventListener('DOMContentLoaded', function() {
+        const ahora = new Date();
+        document.getElementById('ultimaActualizacion').textContent =
+            'Actualizado: ' + ahora.toLocaleTimeString();
+    });
+</script>
+
+</body>
+</html>

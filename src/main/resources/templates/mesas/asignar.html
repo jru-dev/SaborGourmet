@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h3> Asignar Mesa #<span th:text="${mesa.numero}"></span></h3>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Información de la Mesa</h5>
+            <p><strong>Número:</strong> <span th:text="${mesa.numero}"></span></p>
+            <p><strong>Capacidad:</strong> <span th:text="${mesa.capacidad}"></span> personas</p>
+            <p><strong>Estado:</strong> <span th:text="${mesa.estado}" class="badge bg-success"></span></p>
+        </div>
+    </div>
+
+    <form th:action="@{'/mesas/asignar/' + ${mesa.idMesa}}" method="post" class="mt-4">
+
+        <div class="mb-3">
+            <label class="form-label">Seleccionar Cliente:</label>
+            <select name="idCliente" class="form-select" required>
+                <option value="">-- Seleccione un cliente --</option>
+                <option th:each="cliente : ${clientes}"
+                        th:value="${cliente.idCliente}"
+                        th:text="${cliente.dni + ' - ' + cliente.nombres + ' ' + cliente.apellidos}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success"> Asignar Mesa</button>
+            <a th:href="@{/mesas}" class="btn btn-secondary"> Volver</a>
+        </div>
+
+    </form>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<div th:replace="~{layout :: scripts}"></div>
+
+</body>
+</html>
