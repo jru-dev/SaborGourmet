@@ -14,17 +14,20 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/", "/login", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/pedidos/**").hasAnyRole("MOZO", "COCINERO")
                         .requestMatchers("/ventas/**").hasAnyRole("CAJERO", "ADMIN")
                         .requestMatchers("/inventario/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+                        .anyRequest().permitAll() // Temporalmente permite todo para desarrollo
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout.permitAll())
+                .csrf(csrf -> csrf.disable()); // Desactiva CSRF temporalmente para desarrollo
 
         return http.build();
     }
