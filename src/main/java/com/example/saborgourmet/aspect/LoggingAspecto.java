@@ -12,6 +12,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -27,6 +29,17 @@ public class LoggingAspecto {
     private AuditoriaRepository auditoriaRepository;
 
     /**
+     * Obtiene el nombre del usuario autenticado actual
+     */
+    private String obtenerUsuarioActual() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName();
+        }
+        return "sistema";
+    }
+
+    /**
      * Aspecto que envuelve la ejecución de métodos de servicios
      * para registrar entrada, salida y tiempo de ejecución
      */
@@ -38,10 +51,11 @@ public class LoggingAspecto {
         // Obtener logger y nombre del método
         Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass());
         String metodo = joinPoint.getSignature().getName();
+        String usuario = obtenerUsuarioActual();
 
         // Registrar entrada con argumentos si existen
         if (joinPoint.getArgs().length > 0) {
-            logger.info("tx[{}] - {}() INPUT: {}", tx, metodo, Arrays.toString(joinPoint.getArgs()));
+            logger.info("tx[{}] - Usuario[{}] - {}() INPUT: {}", tx, usuario, metodo, Arrays.toString(joinPoint.getArgs()));
         }
 
         // Medir tiempo de inicio
@@ -52,12 +66,12 @@ public class LoggingAspecto {
             // Ejecutar el método interceptado
             result = joinPoint.proceed();
         } catch (Throwable e) {
-            logger.error("tx[{}] - {}() ERROR: {}", tx, metodo, e.getMessage());
+            logger.error("tx[{}] - Usuario[{}] - {}() ERROR: {}", tx, usuario, metodo, e.getMessage());
             throw e;
         }
 
         // Registrar tiempo transcurrido
-        logger.info("tx[{}] - {}(): tiempo transcurrido {} ms.", tx, metodo, (System.currentTimeMillis() - currTime));
+        logger.info("tx[{}] - Usuario[{}] - {}(): tiempo transcurrido {} ms.", tx, usuario, metodo, (System.currentTimeMillis() - currTime));
 
         return result;
     }
@@ -73,6 +87,7 @@ public class LoggingAspecto {
         // Obtener logger y nombre del método
         Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass());
         String metodo = joinPoint.getSignature().getName();
+        String usuarioActual = obtenerUsuarioActual();
 
         String tabla = "";
         Long id = null;
@@ -119,15 +134,15 @@ public class LoggingAspecto {
 
         // Registrar la auditoría en logs y base de datos
         if (id != null && !tabla.isEmpty()) {
-            String traza = "tx[" + tx + "] - " + metodo;
+            String traza = "tx[" + tx + "] - Usuario[" + usuarioActual + "] - " + metodo;
             logger.info("{}: registrando auditoria en tabla '{}' para ID {}", traza, tabla, id);
 
-            // Guardar en la base de datos
+            // Guardar en la base de datos con el usuario autenticado
             auditoriaRepository.save(new Auditoria(
                     tabla,
                     id,
                     Calendar.getInstance().getTime(),
-                    "usuario", // Aquí puedes usar Spring Security para obtener el usuario real
+                    usuarioActual, // Usuario actual obtenido de Spring Security
                     metodo
             ));
         }

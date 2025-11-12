@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <title th:text="${titulo} ?: 'Gestión Restaurante'">Gestión Restaurante</title>
@@ -33,13 +34,17 @@
             bottom: 0;
             text-align: center;
         }
+        .role-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
     </style>
 </head>
 <body>
 
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/}">SaborGourmet</a>
+        <a class="navbar-brand" th:href="@{/}">🍽️ SaborGourmet</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav"
@@ -49,32 +54,49 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Visible para todos los usuarios autenticados -->
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/clientes}"> Clientes</a>
+                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mesas}"> Mesas</a>
+                    <a class="nav-link" th:href="@{/mesas}">🪑 Mesas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mesas/disponibles}"> Disponibles</a>
+                    <a class="nav-link" th:href="@{/mesas/disponibles}">✅ Disponibles</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/pedidos}">Pedidos</a>
+
+                <!-- Solo MOZO y COCINERO -->
+                <li class="nav-item" sec:authorize="hasAnyRole('MOZO', 'COCINERO')">
+                    <a class="nav-link" th:href="@{/pedidos}">🍔 Pedidos</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/ventas}"> Ventas</a>
+
+                <!-- Solo CAJERO y ADMIN -->
+                <li class="nav-item" sec:authorize="hasAnyRole('CAJERO', 'ADMIN')">
+                    <a class="nav-link" th:href="@{/ventas}">💰 Ventas</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/inventario}"> Inventario</a>
+
+                <!-- Solo ADMIN -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/inventario}">📦 Inventario</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/usuarios}">⚙️ Admin</a>
                 </li>
             </ul>
 
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link disabled">Bienvenido, <strong>Admin</strong></a>
+                    <span class="nav-link">
+                        Bienvenido, <strong sec:authentication="name">Usuario</strong>
+                        <span class="badge role-badge bg-info ms-2" sec:authentication="authorities">ROLE</span>
+                    </span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" th:href="@{/logout}"> Salir</a>
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-link nav-link text-danger" style="border: none;">
+                            🚪 Salir
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
