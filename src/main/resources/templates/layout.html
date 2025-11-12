@@ -44,7 +44,7 @@
 
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/}">🍽️ SaborGourmet</a>
+        <a class="navbar-brand" th:href="@{/}"> SaborGourmet</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav"
@@ -56,31 +56,31 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <!-- Visible para todos los usuarios autenticados -->
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/clientes}">👥 Clientes</a>
+                    <a class="nav-link" th:href="@{/clientes}"> Clientes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mesas}">🪑 Mesas</a>
+                    <a class="nav-link" th:href="@{/mesas}"> Mesas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mesas/disponibles}">✅ Disponibles</a>
+                    <a class="nav-link" th:href="@{/mesas/disponibles}"> Disponibles</a>
                 </li>
 
                 <!-- Solo MOZO y COCINERO -->
                 <li class="nav-item" sec:authorize="hasAnyRole('MOZO', 'COCINERO')">
-                    <a class="nav-link" th:href="@{/pedidos}">🍔 Pedidos</a>
+                    <a class="nav-link" th:href="@{/pedidos}"> Pedidos</a>
                 </li>
 
                 <!-- Solo CAJERO y ADMIN -->
                 <li class="nav-item" sec:authorize="hasAnyRole('CAJERO', 'ADMIN')">
-                    <a class="nav-link" th:href="@{/ventas}">💰 Ventas</a>
+                    <a class="nav-link" th:href="@{/ventas}"> Ventas</a>
                 </li>
 
                 <!-- Solo ADMIN -->
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/inventario}">📦 Inventario</a>
+                    <a class="nav-link" th:href="@{/inventario}"> Inventario</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/usuarios}">⚙️ Admin</a>
+                    <a class="nav-link" th:href="@{/admin/usuarios}"> Admin</a>
                 </li>
             </ul>
 
@@ -94,7 +94,7 @@
                 <li class="nav-item">
                     <form th:action="@{/logout}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-link nav-link text-danger" style="border: none;">
-                            🚪 Salir
+                             Salir
                         </button>
                     </form>
                 </li>
